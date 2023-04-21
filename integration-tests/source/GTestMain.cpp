@@ -122,33 +122,31 @@ class GlobalEnvironment : public ::testing::Environment
 {
   public:
     ~GlobalEnvironment() override {}
+
     // cppcheck-suppress unusedFunction
-    void SetUp() override {}
+    void SetUp() override
+    {
+        Aws::Client::ClientConfiguration clientConfig;
+        clientConfig.region = REGION;
+        resourceHandler =
+                std::unique_ptr<IntegrationTestResourceHandler>(new IntegrationTestResourceHandler(clientConfig));
+    }
 
     // cppcheck-suppress unusedFunction
     void TearDown() override
     {
-        options.ioOptions.clientBootstrap_create_fn = [] {
-            Aws::Crt::Io::EventLoopGroup eventLoopGroup(1);
-            Aws::Crt::Io::DefaultHostResolver defaultHostResolver(eventLoopGroup, 8, 30);
-            return Aws::MakeShared<Aws::Crt::Io::ClientBootstrap>(
-                "Aws_Init_Cleanup", eventLoopGroup, defaultHostResolver);
-        };
-
-        Aws::InitAPI(options);
-        {
-            Aws::Client::ClientConfiguration clientConfig;
-            clientConfig.region = REGION;
-            resourceHandler =
-                std::shared_ptr<IntegrationTestResourceHandler>(new IntegrationTestResourceHandler(clientConfig));
-        }
-        resourceHandler->CleanUp();
         if (CLEAN_UP)
         {
+            printf("Clean up thingName: %s\n", THING_NAME.c_str());
             resourceHandler->CleanUpThingAndCert(THING_NAME);
         }
+        else
+        {
+            printf("Skipping clean up for thingName: %s\n", THING_NAME.c_str());
+            resourceHandler->GetTargetArn(THING_NAME);
+        }
+        resourceHandler.reset();
     }
-    Aws::SDKOptions options;
 };
 
 int main(int argc, char **argv)
@@ -173,13 +171,18 @@ int main(int argc, char **argv)
     }
     catch (const std::exception &e)
     {
-        printf("%s", e.what());
+        printf("%s\n", e.what());
     }
     catch (...)
     {
-        printf("Unknown Exception while parsing test arguments");
+        printf("Unknown Exception while parsing test arguments\n");
     }
 
+    Aws::SDKOptions options;
+    Aws::InitAPI(options);
     ::testing::AddGlobalTestEnvironment(new GlobalEnvironment());
-    return RUN_ALL_TESTS();
+    int rc = RUN_ALL_TESTS();
+    printf("Tests Complete!\n");
+    Aws::ShutdownAPI(options);
+    return rc;
 }

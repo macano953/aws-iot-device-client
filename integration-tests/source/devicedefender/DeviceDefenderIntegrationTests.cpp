@@ -26,11 +26,6 @@ class TestDeviceDefenderFeature : public TestBase
     {
         init();
 
-        Aws::Client::ClientConfiguration clientConfig;
-        clientConfig.region = REGION;
-        resourceHandler =
-            std::unique_ptr<IntegrationTestResourceHandler>(new IntegrationTestResourceHandler(clientConfig));
-
         securityProfileName = "Integration-Test-Security-Profile-" + resourceHandler->GetTimeStamp();
         thingGroupName = "group-" + THING_NAME;
 

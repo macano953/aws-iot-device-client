@@ -10,13 +10,8 @@
 
 class TestBase : public ::testing::Test
 {
-
   protected:
     void init();
-    std::unique_ptr<IntegrationTestResourceHandler> resourceHandler;
-
-  private:
-    Aws::SDKOptions options;
 };
 
 #endif // AWS_IOT_DEVICE_CLIENT_INTEGRATION_TESTS_TESTBASE_H

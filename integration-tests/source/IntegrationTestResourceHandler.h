@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#ifndef AWS_IOT_DEVICE_CLIENT_INTEGRATION_TESTS_INTEGRATIONTESTSRESOURCEHANDLER_H
+#define AWS_IOT_DEVICE_CLIENT_INTEGRATION_TESTS_INTEGRATIONTESTSRESOURCEHANDLER_H
+
 #include <list>
 #include <string>
 
@@ -86,5 +89,6 @@ class IntegrationTestResourceHandler
 
     std::string targetArn;
     std::unique_ptr<Aws::Utils::Logging::ConsoleLogSystem> logger;
-    Aws::SDKOptions options;
 };
+
+#endif // AWS_IOT_DEVICE_CLIENT_INTEGRATION_TESTS_INTEGRATIONTESTSRESOURCEHANDLER_H
