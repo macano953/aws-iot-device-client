@@ -2636,7 +2636,7 @@ bool Config::ParseCliArgs(int argc, char **argv, CliArgs &cliArgs)
             search->second.extraSteps(additionalArg);
         }
     }
-    return true;
+    return false;
 }
 
 bool Config::init(const CliArgs &cliArgs)
