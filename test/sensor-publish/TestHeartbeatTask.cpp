@@ -48,8 +48,6 @@ class HeartbeatTaskTest : public ::testing::Test
         aws_event_loop_run(eventLoop);
     }
 
-    void TearDown() override { aws_event_loop_destroy(eventLoop); }
-
     SensorState state;
     PlainConfig::SensorPublish::SensorSettings settings;
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection;

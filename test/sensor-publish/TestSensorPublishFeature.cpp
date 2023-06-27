@@ -30,8 +30,6 @@ class FakeSharedCrtResourceManager : public SharedCrtResourceManager
         eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
     }
 
-    ~FakeSharedCrtResourceManager() { aws_event_loop_destroy(eventLoop); }
-
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> getConnection() override { return connection; }
 
     aws_event_loop *getNextEventLoop() override { return eventLoop; }
@@ -146,8 +144,6 @@ class SensorPublishFeatureTest : public ::testing::Test
         // Configure notifier.
         notifier = std::make_shared<FakeNotifier>();
     }
-
-    void TearDown() override {}
 
     PlainConfig config;
     std::shared_ptr<FakeSharedCrtResourceManager> manager;

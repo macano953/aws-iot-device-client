@@ -45,8 +45,6 @@ class SensorTest : public ::testing::Test
         eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
     }
 
-    void TearDown() override { aws_event_loop_destroy(eventLoop); }
-
     PlainConfig::SensorPublish::SensorSettings settings;
     aws_allocator *allocator;
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection;
