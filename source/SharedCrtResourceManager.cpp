@@ -510,7 +510,8 @@ aws_event_loop *SharedCrtResourceManager::getNextEventLoop()
         return nullptr;
     }
 
-    return aws_event_loop_group_get_next_loop(eventLoopGroup->GetUnderlyingHandle());
+    eventLoop = aws_event_loop_group_get_next_loop(eventLoopGroup->GetUnderlyingHandle());
+    return eventLoop;
 }
 
 aws_allocator *SharedCrtResourceManager::getAllocator()

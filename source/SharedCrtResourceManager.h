@@ -40,8 +40,7 @@ namespace Aws
                 std::unique_ptr<Aws::Crt::Io::DefaultHostResolver> defaultHostResolver;
                 std::unique_ptr<Aws::Crt::Io::ClientBootstrap> clientBootstrap;
                 std::unique_ptr<Aws::Iot::MqttClient> mqttClient;
-                std::shared_ptr<Crt::Mqtt::MqttConnection> connection;
-                aws_allocator *allocator{nullptr};
+
                 aws_mem_trace_level memTraceLevel{AWS_MEMTRACE_NONE};
                 std::shared_ptr<Util::FeatureRegistry> features;
 
@@ -55,6 +54,9 @@ namespace Aws
                 /**
                  * inheritable for testing
                  */
+                std::shared_ptr<Crt::Mqtt::MqttConnection> connection;
+                aws_allocator *allocator{nullptr};
+                aws_event_loop *eventLoop;
                 bool locateCredentials(const PlainConfig &config) const;
 
               public:
