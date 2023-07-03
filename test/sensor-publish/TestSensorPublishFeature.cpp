@@ -145,6 +145,8 @@ class SensorPublishFeatureTest : public ::testing::Test
         notifier = std::make_shared<FakeNotifier>();
     }
 
+    void TearDown() override {}
+
     PlainConfig config;
     std::shared_ptr<FakeSharedCrtResourceManager> manager;
     std::shared_ptr<FakeNotifier> notifier;

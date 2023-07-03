@@ -42,13 +42,15 @@ class SensorTest : public ::testing::Test
         allocator = aws_default_allocator();
 
         // Initialize and start the event loop.
-        eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
+//        eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
     }
+
+//    void TearDown() override { aws_event_loop_destroy(eventLoop); }
 
     PlainConfig::SensorPublish::SensorSettings settings;
     aws_allocator *allocator;
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection;
-    aws_event_loop *eventLoop;
+//    aws_event_loop *eventLoop;
 };
 
 class MockSensor : public Sensor
@@ -140,6 +142,10 @@ class FakeSocket : public Socket
 
 TEST_F(SensorTest, SensorSocketConnectSuccess)
 {
+    // Initialize the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When connect task callback is invoked and socket connect is successful,
     // then no attempt to reconnect to sensor.
     auto socket = std::make_shared<FakeSocket>();
@@ -164,6 +170,10 @@ class FakeSocketConnectFails : public FakeSocket
 
 TEST_F(SensorTest, SensorSocketConnectFails)
 {
+    // Initialize the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When connect task callback is invoked and socket connect fails,
     // then attempt to reconnect to sensor.
     auto socket = std::make_shared<FakeSocketConnectFails>();
@@ -186,6 +196,10 @@ class FakeSocketCountSubscribeEvents : public FakeSocket
 
 TEST_F(SensorTest, SensorSocketConnectionResultSuccess)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When connect result callback returns success,
     // then subscribe to readable events.
     auto socket = std::make_shared<FakeSocketCountSubscribeEvents>();
@@ -199,6 +213,10 @@ TEST_F(SensorTest, SensorSocketConnectionResultSuccess)
 
 TEST_F(SensorTest, SensorSocketConnectionResultFails)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When connect result callback returns success,
     // then do not subscribe to readable events and close and reconnect socket.
     auto socket = std::make_shared<FakeSocketCountSubscribeEvents>();
@@ -212,6 +230,10 @@ TEST_F(SensorTest, SensorSocketConnectionResultFails)
 
 TEST_F(SensorTest, SocketOnReadableFails)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When socket readable callback returns error,
     // then readable callback will exit without publishing as well as close and reconnect the socket.
     auto socket = std::make_shared<FakeSocket>();
@@ -240,6 +262,10 @@ class FakeSocketReadNTimes : public FakeSocket
 
 TEST_F(SensorTest, SocketReadSuccess)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When socket readable callback returns success and socket read returns success,
     // then readable callback will exit after publishing without closing socket.
     int nreads{2};
@@ -260,6 +286,10 @@ class FakeSocketReadWouldBlock : public FakeSocket
 
 TEST_F(SensorTest, SocketReadWouldBlock)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When socket is readable and read returns AWS_IO_READ_WOULD_BLOCK error,
     // then readable callback will exit without publishing, closing, or reconnecting socket.
     auto socket = std::make_shared<FakeSocketReadWouldBlock>();
@@ -279,6 +309,10 @@ class FakeSocketReadFails : public FakeSocket
 
 TEST_F(SensorTest, SocketReadFails)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When socket is readable and read fails,
     // then readable callback will exit without publishing as well as close and reconnect the socket.
     auto socket = std::make_shared<FakeSocketReadFails>();
@@ -311,6 +345,10 @@ class FakeSocketReadData : public FakeSocket
 
 TEST_F(SensorTest, ScanEomNoMatch)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When data contains no eom, then no eom match found.
     auto socket = std::make_shared<FakeSocketReadData>();
     socket->dataToWrite.emplace_back("data with no eom");
@@ -325,6 +363,10 @@ TEST_F(SensorTest, ScanEomNoMatch)
 
 TEST_F(SensorTest, ScanEomOneMatch)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When data contains 1 eom, then 1 eom match found.
     auto socket = std::make_shared<FakeSocketReadData>();
     socket->dataToWrite.emplace_back("msg1,msg2");
@@ -340,6 +382,10 @@ TEST_F(SensorTest, ScanEomOneMatch)
 
 TEST_F(SensorTest, ScanEomTwoMatch)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When data contains 2 eom, then 2 eom match found.
     auto socket = std::make_shared<FakeSocketReadData>();
     socket->dataToWrite.emplace_back("msg1,msg2,");
@@ -355,6 +401,10 @@ TEST_F(SensorTest, ScanEomTwoMatch)
 
 TEST_F(SensorTest, ScanEomTwoMatchTwoRead)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When data contains 2 eom in separate reads, then 2 eom match found.
     auto socket = std::make_shared<FakeSocketReadData>();
     socket->dataToWrite.emplace_back("msg1,");
@@ -371,6 +421,10 @@ TEST_F(SensorTest, ScanEomTwoMatchTwoRead)
 
 TEST_F(SensorTest, ScanEomTwoReadOneMatch)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When data contains 1 eom in separate reads, then 1 eom match found.
     auto socket = std::make_shared<FakeSocketReadData>();
     socket->dataToWrite.emplace_back("msg1"); // No EOM.
@@ -387,6 +441,10 @@ TEST_F(SensorTest, ScanEomTwoReadOneMatch)
 
 TEST_F(SensorTest, NeedPublishBufferSizeBreach)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the bufferSize limit is breached, then we will publish 1 batch.
     settings.bufferTimeMs = 5000;
     settings.bufferSize = 5;
@@ -406,6 +464,10 @@ TEST_F(SensorTest, NeedPublishBufferSizeBreach)
 
 TEST_F(SensorTest, NeedPublishBufferSizeAndTimeNoBreach)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When neither bufferSize and bufferTime limits are breached,
     // then we will not publish any batch.
     settings.bufferTimeMs = 5000;
@@ -426,6 +488,10 @@ TEST_F(SensorTest, NeedPublishBufferSizeAndTimeNoBreach)
 
 TEST_F(SensorTest, NeedPublishBufferTimeBreach)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the bufferTime limit is breached, then we will publish 1 batch.
     settings.bufferTimeMs = 5000;
     settings.bufferSize = 5;
@@ -445,6 +511,10 @@ TEST_F(SensorTest, NeedPublishBufferTimeBreach)
 
 TEST_F(SensorTest, NeedPublishBufferSize0Breach)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the bufferSize limit is 0, then we will publish 1 batch.
     settings.bufferTimeMs = 5000;
     settings.bufferSize = 0;
@@ -464,6 +534,10 @@ TEST_F(SensorTest, NeedPublishBufferSize0Breach)
 
 TEST_F(SensorTest, NeedPublishBufferTime0Breach)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the bufferTime limit is 0, then we will publish 1 batch.
     settings.bufferTimeMs = 0;
     settings.bufferSize = 5;
@@ -483,6 +557,10 @@ TEST_F(SensorTest, NeedPublishBufferTime0Breach)
 
 TEST_F(SensorTest, NeedPublishBufferSizeMultipleBatches)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the number of buffered messages is twice the bufferSize,
     // then we will publish 2 batches.
     settings.bufferTimeMs = 5000;
@@ -503,6 +581,10 @@ TEST_F(SensorTest, NeedPublishBufferSizeMultipleBatches)
 
 TEST_F(SensorTest, NeedPublishReadBufferFull)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the read buffer is full and we have at least 1 message,
     // then we will publish 1 batch.
     settings.bufferTimeMs = 5000;
@@ -525,6 +607,10 @@ TEST_F(SensorTest, NeedPublishReadBufferFull)
 
 TEST_F(SensorTest, NeedPublishDiscardReadBuffer)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When the read buffer is full and we haven't found any end of message delimiters,
     // then we will not publish a batch and discard unpublished data.
     settings.bufferTimeMs = 5000;
@@ -548,6 +634,10 @@ TEST_F(SensorTest, NeedPublishDiscardReadBuffer)
 
 TEST_F(SensorTest, NeedPublishNoMessages)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+
     // When buffering is disabled and there are no messages, then we will not publish a batch.
     settings.bufferTimeMs = 0;
     settings.bufferSize = 0;

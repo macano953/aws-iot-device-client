@@ -43,15 +43,17 @@ class HeartbeatTaskTest : public ::testing::Test
         settings.mqttHeartbeatTopic = "my-sensor-heartbeat";
         settings.heartbeatTimeSec = 0; // Publish without delay.
 
-        // Initialize and start the event loop.
-        eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
-        aws_event_loop_run(eventLoop);
+//        // Initialize and start the event loop.
+//        eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+//        aws_event_loop_run(eventLoop);
     }
+
+//    void TearDown() override { aws_event_loop_destroy(eventLoop); }
 
     SensorState state;
     PlainConfig::SensorPublish::SensorSettings settings;
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> connection;
-    aws_event_loop *eventLoop;
+//    aws_event_loop *eventLoop;
 };
 
 struct MockHeartbeatTask : public HeartbeatTask
@@ -71,6 +73,11 @@ struct MockHeartbeatTask : public HeartbeatTask
 
 TEST_F(HeartbeatTaskTest, TopicNotSpecified)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+    aws_event_loop_run(eventLoop);
+
     // When a heartbeat topic is not specified, then task is never started.
     settings.mqttHeartbeatTopic = std::string{};
 
@@ -91,6 +98,11 @@ TEST_F(HeartbeatTaskTest, TopicNotSpecified)
 
 TEST_F(HeartbeatTaskTest, TaskStartedAndNoHeartbeat)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+    aws_event_loop_run(eventLoop);
+
     // When sensor state is not connected, the task is started and but no heartbeat is published.
     state = SensorState::NotConnected;
 
@@ -111,6 +123,11 @@ TEST_F(HeartbeatTaskTest, TaskStartedAndNoHeartbeat)
 
 TEST_F(HeartbeatTaskTest, TaskStartedAndHeartbeat)
 {
+    // Initialize and start the event loop.
+    aws_event_loop *eventLoop;
+    eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
+    aws_event_loop_run(eventLoop);
+
     // When sensor state is connected, the task is started and heartbeat is published.
     state = SensorState::Connected;
 
