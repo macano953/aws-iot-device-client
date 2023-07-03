@@ -27,10 +27,10 @@ class FakeSharedCrtResourceManager : public SharedCrtResourceManager
     FakeSharedCrtResourceManager()
     {
         allocator = aws_default_allocator();
-        eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
+//        eventLoop = aws_event_loop_new_default(allocator, aws_high_res_clock_get_ticks);
     }
 
-    ~FakeSharedCrtResourceManager() { aws_event_loop_destroy(eventLoop); }
+//    ~FakeSharedCrtResourceManager() { aws_event_loop_destroy(eventLoop); }
 
     std::shared_ptr<Aws::Crt::Mqtt::MqttConnection> getConnection() override { return connection; }
 
@@ -176,6 +176,8 @@ class MockSensorPublishFeature : public SensorPublishFeature
 
 TEST_F(SensorPublishFeatureTest, InitSensorSuccess)
 {
+    manager->eventLoop = aws_event_loop_new_default(manager->allocator, aws_high_res_clock_get_ticks);
+
     // Feature initializes one Sensor per entry in config.
     MockSensorPublishFeature feature;
 
@@ -186,6 +188,7 @@ TEST_F(SensorPublishFeatureTest, InitSensorSuccess)
 
 TEST_F(SensorPublishFeatureTest, InitSensorDisabled)
 {
+    manager->eventLoop = aws_event_loop_new_default(manager->allocator, aws_high_res_clock_get_ticks);
     // When a Sensor entry is disabled in config,
     // then the entry is not added to the list of sensors.
     config.sensorPublish.settings[1].enabled = false;
@@ -212,6 +215,7 @@ class MockSensorPublishFeatureCreateSensorThrows : public SensorPublishFeature
 
 TEST_F(SensorPublishFeatureTest, InitSensorThrows)
 {
+    manager->eventLoop = aws_event_loop_new_default(manager->allocator, aws_high_res_clock_get_ticks);
     // When a Sensor constructor throws an exception,
     // then the entry is not added to the list of sensors.
     config.sensorPublish.settings[1].enabled = false;
@@ -225,6 +229,7 @@ TEST_F(SensorPublishFeatureTest, InitSensorThrows)
 
 TEST_F(SensorPublishFeatureTest, StartSensorSuccess)
 {
+    manager->eventLoop = aws_event_loop_new_default(manager->allocator, aws_high_res_clock_get_ticks);
     // After calling start, feature start notification is sent.
     MockSensorPublishFeature feature;
 
@@ -239,6 +244,7 @@ TEST_F(SensorPublishFeatureTest, StartSensorSuccess)
 
 TEST_F(SensorPublishFeatureTest, StopSensorSuccess)
 {
+    manager->eventLoop = aws_event_loop_new_default(manager->allocator, aws_high_res_clock_get_ticks);
     // After calling stop, feature stop notification is sent.
     MockSensorPublishFeature feature;
 

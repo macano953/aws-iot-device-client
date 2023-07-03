@@ -127,7 +127,6 @@ TEST_F(HeartbeatTaskTest, TaskStartedAndHeartbeat)
     aws_event_loop *eventLoop;
     eventLoop = aws_event_loop_new_default(aws_default_allocator(), aws_high_res_clock_get_ticks);
     aws_event_loop_run(eventLoop);
-
     // When sensor state is connected, the task is started and heartbeat is published.
     state = SensorState::Connected;
 
